@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -15,12 +16,12 @@ const (
 )
 
 type Message struct {
-	Type      MessageType
-	RoomID    string
-	UserID    string
-	Username  string
-	Content   string
-	Timestamp time.Time
+	Type      MessageType `json:"type"`
+	RoomID    string      `json:"room_id"`
+	UserID    string      `json:"user_id"`
+	Username  string      `json:"username"`
+	Content   string      `json:"content"`
+	Timestamp time.Time   `json:"timestamp"`
 }
 
 // constructor to create a new message
@@ -49,10 +50,23 @@ func Validate(msg Message) error {
 }
 
 // Convert a message to a json format
-func TOJSON() {}
+func ToJSON(msg Message) ([]byte, error) {
+	data, err := json.Marshal(msg)
+	if err != nil {
+		return nil, fmt.Errorf("Error when marshal to json")
+	}
+	return data, nil
+}
 
 // parse a JSON into a message struct
-func FROMJSON() {}
+func FromJSON(data []byte) (Message, error) {
+	var msg Message
+	err := json.Unmarshal(data, &msg)
+	if err != nil {
+		return Message{}, fmt.Errorf("error when Unmarshal the JSON")
+	}
+	return msg, nil
+}
 
 // check if the message type is a valid entry
 func (t MessageType) IsValid() bool {
